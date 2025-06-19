@@ -57,7 +57,19 @@ pipeline {
             }
         }
 
+        stage('Push Docker Imge') {
+            steps {
+                echo 'Push Docker Imge'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER_VAR', passwordVariable: 'DOCKER_PASS_VAR')]) {
+                    script {
+                        sh "echo ${DOCKER_PASS_VAR} | docker login -u ${DOCKER_USER_VAR} --password-stdin"
 
+                        docker.image("${env.IMAGE_NAME}:${env.TAG}")
+                        docker.image("${env.IMAGE_NAME}:latest")
+                    }
+                }
+            }
+        }
     }
 
     post {

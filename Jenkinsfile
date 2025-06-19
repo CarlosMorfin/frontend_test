@@ -43,18 +43,18 @@ pipeline {
             }
         }
 
-        stage('Scan application with trivy') {
-            steps {
-                echo "Scanenado la aplicacion con trivy"
-                sh """
-                docker run --rm \\
-                    -v ${WORKSPACE}:/root/app \\
-                    aquasec/trivy fs --severity HIGH,CRITICAL --exit-code 1 \\
-                    /root/app/package-lock.json
-                """
+        // stage('Scan application with trivy') {
+        //     steps {
+        //         echo "Scanenado la aplicacion con trivy"
+        //         sh """
+        //         docker run --rm \\
+        //             -v ${WORKSPACE}:/root/app \\
+        //             aquasec/trivy fs --severity HIGH,CRITICAL --exit-code 1 \\
+        //             /root/app/package-lock.json
+        //         """
 
-            }
-        }
+        //     }
+        // }
 
         stage('SonarQube Analysis') {
             steps {

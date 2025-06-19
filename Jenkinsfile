@@ -5,6 +5,10 @@ pipeline {
 
     // }
 
+    tools {
+        nodejs 'NodeJS-18'
+    }
+
     stages {
         stage('Checkout'){
             steps {
@@ -13,11 +17,17 @@ pipeline {
             }
         }
 
+        stage('Install Dependecies & Build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
     }
 
     post {
         always {
-            echo ''
+            // echo ''
             cleanWs()
         }
     }

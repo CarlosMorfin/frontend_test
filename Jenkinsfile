@@ -23,8 +23,11 @@ pipeline {
             steps{
                 script{
                     echo 'Obteniendo la version de la aplicacion'
-                    // def appVersion= 
-                    env.APP_VERSION = sh( script: "node -p \\"require('./package.json').version\\"", returnStdout: true ).trim()
+                    def appVersion = sh( 
+                        script: "node -p \\"require('./package.json').version\\"",
+                        returnStdout: true
+                    ).trim()
+                    env.APP_VERSION = appVersion
                     echo "version de la aplicacion: ${env.APP_VERSION}"
                 }
             }

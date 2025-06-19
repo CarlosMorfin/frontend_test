@@ -26,6 +26,19 @@ pipeline {
             }
         }
 
+        stage('Scan application with trivy') {
+            steps {
+                echo "Scanenado la aplicacion con trivy"
+                sh """
+                docker run --rm \\
+                    -v ${WORKSPACE}:/app \\
+                    aquasec/trivy fs --severity HIGH,CRITICAL --exit-code 1 \\
+                    /app
+                """
+
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 echo 'Enviando analisis'
@@ -46,8 +59,6 @@ pipeline {
                 }
             }
         }
-
-        
 
         stage("Obtener version") {
             steps{
@@ -81,14 +92,14 @@ pipeline {
                 sh """
                 docker run --rm \\
                     -v /var/run/docker.sock:/var/run/docker.sock \\
-                    aquasec/trivy image --severity CRITICAL,HIGH --exit-code 1 \\
+                    aquasec/trivy image --severity HIGH,CRITICAL --exit-code 1 \\
                     ${env.IMAGE_NAME}:${env.APP_VERSION}
                 """
 
             }
         }
 
-        stage('Push Docker Imge') {
+        stage('Push Docker Image') {
             steps {
                 echo "Push Docker Image: ${env.IMAGE_NAME}:${env.APP_VERSION}"
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER_VAR', passwordVariable: 'DOCKER_PASS_VAR')]) {

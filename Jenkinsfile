@@ -23,7 +23,7 @@ pipeline {
                 sh 'npm run build'
             }
         }
-        stage(SonarQube Analysis) {
+        stage('SonarQube Analysis') {
             stepts {
                 script {
                     def scannerPath = tool 'SonarScannerCLI'

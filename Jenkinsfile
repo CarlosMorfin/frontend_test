@@ -26,6 +26,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                echo 'Enviando analisis'
                 script {
                     def scannerPath = tool 'SonarScannerCLI'
                     withSonarQubeEnv('SonarQube') {
@@ -34,11 +35,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Esperando analisis de SonarQube') {
+            steps {
+                echo 'Esperando analisis de SonarQube'
+                timeout(time: 1, unit: HOURS) {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
 
     post {
         always {
-            // echo ''
+            echo 'Limpiando workspace...'
             cleanWs()
         }
     }

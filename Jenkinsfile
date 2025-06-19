@@ -31,7 +31,7 @@ pipeline {
                 echo "Scanenado la aplicacion con trivy"
                 sh """
                 docker run --rm \\
-                    -v ${WORKSPACE}:/roo/app \\
+                    -v ${WORKSPACE}:/root/app \\
                     aquasec/trivy fs --severity HIGH,CRITICAL --exit-code 1 \\
                     /root/app
                 """

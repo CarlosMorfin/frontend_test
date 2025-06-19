@@ -91,8 +91,11 @@ pipeline {
                 echo "Scanenado la imagen de docker"
                 sh """
                 docker run --rm \\
-                    -v /var/run/docker.sock:/var/run/docker.sock \\
+                    -v /var/run/docker.sock:/var/run/docker.sock -v /home/jesus/personal/test/frontend_test:/root/app  \\
                     aquasec/trivy image --severity HIGH,CRITICAL --exit-code 1 \\
+                        --format template \\
+                        --template "@/contrib/html.tpl" \\
+                        -o /root/app/trivy-image-report.html \\
                     ${env.IMAGE_NAME}:${env.APP_VERSION}
                 """
 

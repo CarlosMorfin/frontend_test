@@ -19,21 +19,6 @@ pipeline {
             }
         }
 
-        stage("Obtener version") {
-            steps{
-                script{
-                    echo 'Obteniendo la version de la aplicacion'
-                    def appVersion = sh( 
-                        script: "node -p \"require('./package.json').version\"",
-                        returnStdout: true
-                    ).trim()
-                    echo "Version de la aplicacion: ${env.APP_VERSION}"
-
-                    env.APP_VERSION = appVersion
-                }
-            }
-        }
-
         stage('Install Dependecies & Build') {
             steps {
                 sh 'npm install'
@@ -62,6 +47,25 @@ pipeline {
             }
         }
 
+        
+
+        stage("Obtener version") {
+            steps{
+                script{
+                    echo 'Obteniendo la version de la aplicacion'
+                    
+                    def appVersion = sh( 
+                        script: "node -p \"require('./package.json').version\"",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Version de la aplicacion: ${appVersion}"
+
+                    env.APP_VERSION = appVersion
+                }
+            }
+        }
+
         stage('Build Docker Imge') {
             steps {
                 echo "Build Docker Image: ${env.IMAGE_NAME}:${env.APP_VERSION}"
@@ -69,6 +73,19 @@ pipeline {
                     def dockerImage = docker.build("${env.IMAGE_NAME}:${env.APP_VERSION}", ".")
                     dockerImage.tag('latest')
                 }
+            }
+        }
+
+        stage('Scan Docker image') {
+            steps {
+                echo "Scanenado la imagen de docker"
+                sh """
+                docker run --rm 
+                    -v /var/run/docker.sock:/var/run/docker.sock \\
+                    aquasec/trivy image --severity CRITICAL,HIGH --exit-code 1 \\
+                    ${env.IMAGE_NAME}:${env.APP_VERSION}
+                """
+
             }
         }
 

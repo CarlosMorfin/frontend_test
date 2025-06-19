@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout'){
             steps {
                 echo 'Clonado de repositorio'
-                chekcout scm
+                checkout scm
             }
         }
 

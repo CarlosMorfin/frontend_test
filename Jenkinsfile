@@ -19,6 +19,14 @@ pipeline {
             }
         }
 
+        stage("Obtener version") {
+            script{
+                echo 'Obteniendo la version de la aplicacion'
+                env.APP_VERSION = script: "node -p \\"require('./package.json').version\\""
+                echo "version de la aplicacion: ${env.APP_VERSION}"
+            }
+        }
+
         stage('Install Dependecies & Build') {
             steps {
                 sh 'npm install'

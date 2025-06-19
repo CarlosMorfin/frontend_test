@@ -1,9 +1,11 @@
 pipeline {
     agent any
 
-    // environment {
-
-    // }
+    environment {
+        DOCKER_HUB_USER = "carlosmorfin"
+        IMAGE_NAME = "${DOCKER_HUB_USER}/my-front"
+        TAG = "${env.BUILD_NUMBER}"
+    }
 
     tools {
         nodejs 'NodeJS-18'
@@ -44,6 +46,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Imge') {
+            steps {
+                echo 'Build Docker Imge'
+                script {
+                    def dockerImage = docker.build("${env.IMAGE_NAME}:${env.TAG}", ".")
+                    dockerImage.tag('latest')
+                }
+            }
+        }
+
+
     }
 
     post {

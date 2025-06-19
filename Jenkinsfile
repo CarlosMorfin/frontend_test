@@ -39,7 +39,7 @@ pipeline {
         stage('Esperando analisis de SonarQube') {
             steps {
                 echo 'Esperando analisis de SonarQube'
-                timeout(time: 1, unit: HOURS) {
+                timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
                 }
             }

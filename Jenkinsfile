@@ -27,8 +27,9 @@ pipeline {
                         script: "node -p \"require('./package.json').version\"",
                         returnStdout: true
                     ).trim()
+                    echo "Version de la aplicacion: ${env.APP_VERSION}"
+
                     env.APP_VERSION = appVersion
-                    echo "version de la aplicacion: ${env.APP_VERSION}"
                 }
             }
         }
@@ -63,9 +64,9 @@ pipeline {
 
         stage('Build Docker Imge') {
             steps {
-                echo "Build Docker Image: ${env.IMAGE_NAME}:${env.TAG}"
+                echo "Build Docker Image: ${env.IMAGE_NAME}:${env.APP_VERSION}"
                 script {
-                    def dockerImage = docker.build("${env.IMAGE_NAME}:${env.TAG}", ".")
+                    def dockerImage = docker.build("${env.IMAGE_NAME}:${env.APP_VERSION}", ".")
                     dockerImage.tag('latest')
                 }
             }
@@ -73,12 +74,12 @@ pipeline {
 
         stage('Push Docker Imge') {
             steps {
-                echo "Push Docker Image: ${env.IMAGE_NAME}:${env.TAG}"
+                echo "Push Docker Image: ${env.IMAGE_NAME}:${env.APP_VERSION}"
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER_VAR', passwordVariable: 'DOCKER_PASS_VAR')]) {
                     script {
                         sh "echo ${DOCKER_PASS_VAR} | docker login -u ${DOCKER_USER_VAR} --password-stdin"
 
-                        docker.image("${env.IMAGE_NAME}:${env.TAG}").push()
+                        docker.image("${env.IMAGE_NAME}:${env.APP_VERSION}").push()
                         docker.image("${env.IMAGE_NAME}:latest").push()
 
                         sh "docker logout"

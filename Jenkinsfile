@@ -24,7 +24,7 @@ pipeline {
                 script{
                     echo 'Obteniendo la version de la aplicacion'
                     def appVersion = sh( 
-                        script: "node -p \\"require('./package.json').version\\"",
+                        script: "node -p \"require('./package.json').version\"",
                         returnStdout: true
                     ).trim()
                     env.APP_VERSION = appVersion

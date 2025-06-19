@@ -22,7 +22,8 @@ pipeline {
         stage("Obtener version") {
             script{
                 echo 'Obteniendo la version de la aplicacion'
-                env.APP_VERSION = script: "node -p \\"require('./package.json').version\\""
+
+                env.APP_VERSION = sh( script: "node -p \\"require('./package.json').version\\"" ).trim()
                 echo "version de la aplicacion: ${env.APP_VERSION}"
             }
         }

@@ -71,7 +71,6 @@ pipeline {
                 echo "Build Docker Image: ${env.IMAGE_NAME}:${env.APP_VERSION}"
                 script {
                     def dockerImage = docker.build("${env.IMAGE_NAME}:${env.APP_VERSION}", ".")
-                    dockerImage.tag('latest')
                 }
             }
         }
@@ -80,7 +79,7 @@ pipeline {
             steps {
                 echo "Scanenado la imagen de docker"
                 sh """
-                docker run --rm 
+                docker run --rm \\
                     -v /var/run/docker.sock:/var/run/docker.sock \\
                     aquasec/trivy image --severity CRITICAL,HIGH --exit-code 1 \\
                     ${env.IMAGE_NAME}:${env.APP_VERSION}
@@ -97,7 +96,6 @@ pipeline {
                         sh "echo ${DOCKER_PASS_VAR} | docker login -u ${DOCKER_USER_VAR} --password-stdin"
 
                         docker.image("${env.IMAGE_NAME}:${env.APP_VERSION}").push()
-                        docker.image("${env.IMAGE_NAME}:latest").push()
 
                         sh "docker logout"
                     }

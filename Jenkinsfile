@@ -19,6 +19,23 @@ pipeline {
             }
         }
 
+        stage("Obtener version") {
+            steps{
+                script{
+                    echo 'Obteniendo la version de la aplicacion'
+                    
+                    def appVersion = sh( 
+                        script: "node -p \"require('./package.json').version\"",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Version de la aplicacion: ${appVersion}"
+
+                    env.APP_VERSION = appVersion
+                }
+            }
+        }
+
         stage('Install Dependecies & Build') {
             steps {
                 sh 'npm install'
@@ -33,7 +50,7 @@ pipeline {
                 docker run --rm \\
                     -v ${WORKSPACE}:/root/app \\
                     aquasec/trivy fs --severity HIGH,CRITICAL --exit-code 1 \\
-                    /root/app
+                    /root/app/package-lock.json
                 """
 
             }
@@ -56,23 +73,6 @@ pipeline {
                 echo 'Esperando analisis de SonarQube'
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-        stage("Obtener version") {
-            steps{
-                script{
-                    echo 'Obteniendo la version de la aplicacion'
-                    
-                    def appVersion = sh( 
-                        script: "node -p \"require('./package.json').version\"",
-                        returnStdout: true
-                    ).trim()
-
-                    echo "Version de la aplicacion: ${appVersion}"
-
-                    env.APP_VERSION = appVersion
                 }
             }
         }

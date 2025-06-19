@@ -91,7 +91,7 @@ pipeline {
                 echo "Scanenado la imagen de docker"
                 sh """
                 docker run --rm \\
-                    -v /var/run/docker.sock:/var/run/docker.sock -v /home/jesus/personal/test/frontend_test:/root/app  \\
+                    -v /var/run/docker.sock:/var/run/docker.sock -v /home/jesus/personal/test:/root/app  \\
                     aquasec/trivy image --severity HIGH,CRITICAL --exit-code 1 \\
                         --format template \\
                         --template "@/contrib/html.tpl" \\

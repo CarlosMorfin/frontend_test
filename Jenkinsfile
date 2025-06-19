@@ -49,7 +49,7 @@ pipeline {
 
         stage('Build Docker Imge') {
             steps {
-                echo 'Build Docker Imge'
+                echo "Build Docker Image: ${env.IMAGE_NAME}:${env.TAG}"
                 script {
                     def dockerImage = docker.build("${env.IMAGE_NAME}:${env.TAG}", ".")
                     dockerImage.tag('latest')
@@ -59,13 +59,15 @@ pipeline {
 
         stage('Push Docker Imge') {
             steps {
-                echo 'Push Docker Imge'
+                echo "Push Docker Image: ${env.IMAGE_NAME}:${env.TAG}"
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER_VAR', passwordVariable: 'DOCKER_PASS_VAR')]) {
                     script {
                         sh "echo ${DOCKER_PASS_VAR} | docker login -u ${DOCKER_USER_VAR} --password-stdin"
 
-                        docker.image("${env.IMAGE_NAME}:${env.TAG}")
-                        docker.image("${env.IMAGE_NAME}:latest")
+                        docker.image("${env.IMAGE_NAME}:${env.TAG}").push()
+                        docker.image("${env.IMAGE_NAME}:latest").push()
+
+                        sh "docker logout"
                     }
                 }
             }
